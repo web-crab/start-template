@@ -13,6 +13,7 @@ import header  from 'gulp-header'              //  Добавляет текст
 import footer  from 'gulp-footer'              //  Добавляет текст в конец файла  
 
 import stylus  from 'gulp-stylus'              //  Компилирует stylus
+import uncss   from 'gulp-uncss'               //  Отсеивает неиспользуемые стили
 import prefix  from 'gulp-autoprefixer'        //  Подставляет вендорные префиксы
 import csso    from 'gulp-csso'                //  Минифицирует css
 
@@ -73,6 +74,7 @@ gulp.task('main.css', () => {
         .pipe(concat('main.css'))
         .pipe(srcmaps.init())
         .pipe(replace(/{ver}/g, Date.now()))
+        // .pipe(uncss({ html: ['app/**/*.html'], ignore: ['error'] }))
         .pipe(prefix(['last 20 versions', '> 1%', 'ie 8', 'ie 7']))
         .pipe(csso())
         .pipe(srcmaps.write())
@@ -91,7 +93,7 @@ gulp.task('main.js', () => {
     gulp.src('app/js/**/*')
         .pipe(concat('main.js'))
         .pipe(srcmaps.init())        
-        .pipe(babel({ presets: ['es2015'] }))
+        .pipe(babel({ presets: ['env'] }))
         .pipe(uglify())
         .pipe(header('document.addEventListener("DOMContentLoaded", function() {'))
         .pipe(footer('});'))
