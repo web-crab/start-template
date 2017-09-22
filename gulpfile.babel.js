@@ -3,14 +3,14 @@ import gutil   from 'gulp-util'                //  Набор утилит, ис
 import bSync   from 'browser-sync'             //  Сервер для разработки
 import changed from 'gulp-changed'             //  Отсеивает файлы без именений
 
-import rigger  from 'gulp-rigger'              //  Импортирует файлы
+import include from 'gulp-include'             //  Импортирует файлы
 import concat  from 'gulp-concat'              //  Объединяет файлы
 import del     from 'del'                      //  Удаляет файлы
 import path    from 'path'                     //  Модуль для работы с путями
 
 import replace from 'gulp-replace'             //  Замена текста в файле по regExp
 import header  from 'gulp-header'              //  Добавляет текст в начало файла
-import footer  from 'gulp-footer'              //  Добавляет текст в конец файла  
+import footer  from 'gulp-footer'              //  Добавляет текст в конец файла
 
 import stylus  from 'gulp-stylus'              //  Компилирует stylus
 import uncss   from 'gulp-uncss'               //  Отсеивает неиспользуемые стили
@@ -24,6 +24,8 @@ import srcmaps from 'gulp-sourcemaps'          //  Исходные файлы �
 import imgmin  from 'gulp-imagemin'            //  Минифицирует изображения
 import jpgrec  from 'imagemin-jpeg-recompress' //  Доп. минификация JPEG
 import pngrec  from 'imagemin-pngquant'        //  Доп. минификация PNG
+import svgmin  from 'gulp-svgmin'              //  Минификация SVG
+import sprite  from 'gulp-svgstore'            //  Объединение SVG в спрайт
 
 import ftp     from 'vinyl-ftp'                //  FTP-соединение
 import { host, user, pass }  from './ftp'      //  Доступ к FTP
@@ -41,14 +43,14 @@ const globeRestFiles = [
     '!app/{favicons,favicons/**}',
     '!app/{fonts,fonts/**}',
     '!app/{img,img/**}',
+    '!app/img/{svg,svg/**}',    
     '!app/{include,include/**}',
     '!app/{js,js/**}',
     '!app/{libs,libs/**}',
     '!app/{php,php/**}',        
     '!app/{styl,styl/**}',
     '!app/*.html',  
-    'app/**',
-    'app/.htaccess'        
+    'app/**'
 ]
 
 
@@ -58,11 +60,11 @@ gulp.task('browser-sync', () => bSync.init({ server: { baseDir: "dist" }, notify
 gulp.task('favicons', () => gulp.src('app/favicons/**').pipe(changed('dist/favicons')).pipe(gulp.dest('dist/favicons')))
 gulp.task('fonts', () => gulp.src('app/fonts/**').pipe(changed('dist/fonts')).pipe(gulp.dest('dist/fonts')))
 gulp.task('php', () => gulp.src('app/php/**').pipe(changed('dist/php')).pipe(gulp.dest('dist/php')))
-gulp.task('restFiles', () => gulp.src(globeRestFiles).pipe(changed('dist/')).pipe(gulp.dest('dist/')))
+gulp.task('restFiles', () => gulp.src(globeRestFiles, { dot: true }).pipe(changed('dist/')).pipe(gulp.dest('dist/')))
 
-gulp.task('html',  () => {
+gulp.task('html', () => {
     gulp.src('app/*.html')
-        .pipe(rigger())
+        .pipe(include())
         .pipe(replace(/{ver}/g, Date.now()))        
         .pipe(gulp.dest('dist/'))
         .pipe(bSync.reload({ stream: true }))
@@ -95,8 +97,8 @@ gulp.task('main.js', () => {
         .pipe(srcmaps.init())        
         .pipe(babel({ presets: ['env'] }))
         .pipe(uglify())
-        .pipe(header('document.addEventListener("DOMContentLoaded", function() {'))
-        .pipe(footer('});'))
+        .pipe(header('(function(window, document){document.addEventListener("DOMContentLoaded", function() {'))
+        .pipe(footer('})})(window, document);'))
         .pipe(srcmaps.write())
         .pipe(gulp.dest('dist/js/'))
         .pipe(bSync.reload({ stream: true }))
@@ -110,9 +112,28 @@ gulp.task('vendor.js', () => {
 })
 
 gulp.task('img', () => {
-    gulp.src('app/img/**')
+    gulp.src(['app/img/**', '!app/img/{svg,svg/**}'])
         .pipe(imgmin([jpgrec({ progressive: true, max: 80, min: 70 }), pngrec({ quality: '80' })]))
         .pipe(gulp.dest('dist/img/'))
+})
+
+gulp.task('svg', () => {
+    gulp.src('app/img/svg/**')
+        .pipe(svgmin({
+            plugins: [
+                { removeAttrs: { attrs: '(fill|stroke|style)' } },
+                { removeDimensions: true }
+            ]
+        }))
+        .pipe(sprite({ inlineSvg: true }))
+        .pipe(replace(/<svg /g, '<svg style="display:none" '))
+        .pipe(require('through2').obj(file => {
+            gulp.src('app/*.html')
+                .pipe(include())
+                .pipe(replace(/<body>/g, ('<body>' + file.contents.toString())))
+                .pipe(gulp.dest('dist'))
+        }))
+        .pipe(bSync.reload({ stream: true }))
 })
 
 gulp.task('ftp', () => {
@@ -122,15 +143,16 @@ gulp.task('ftp', () => {
         .pipe(gutil.noop())
 })
 
-gulp.task('default', ['favicons', 'fonts', 'restFiles', 'html', 'main.css', 'vendor.css', 'main.js', 'vendor.js', 'img', 'browser-sync'], () => {
+gulp.task('default', ['img', 'html', 'favicons', 'fonts', 'restFiles',  'main.css', 'vendor.css', 'main.js', 'vendor.js', 'svg', 'browser-sync'], () => {
     gulp.watch('app/**/*.html', ['html'])
     gulp.watch('app/styl/**/*', ['main.css'])
     gulp.watch('app/libs/**/*.css', ['vendor.css'])
     gulp.watch('app/js/**/*', ['main.js'])
     gulp.watch('app/libs/**/*.js', ['vendor.js'])
-    gulp.watch('app/img/**/*', ['img']).on('change', delSync)
+    gulp.watch(['app/img/**/*', '!app/img/{svg,svg/**}'], ['img']).on('change', delSync)
+    gulp.watch('app/img/svg/**', ['svg'])   
     gulp.watch('app/favicons/**/*', ['favicons']).on('change', delSync)
     gulp.watch('app/fonts/**/*', ['fonts']).on('change', delSync)
     gulp.watch('app/php/**/*', ['php']).on('change', delSync)
-    gulp.watch(globeRestFiles, ['restFiles']).on('change', delSync)
+    gulp.watch(globeRestFiles, { dot: true }, ['restFiles']).on('change', delSync)
 })
