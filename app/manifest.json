@@ -1,0 +1,81 @@
+{
+    "dir": "ltr",
+    "lang": "ru",
+    "name": "Курьер Онлайн",
+    "scope": "/",
+    "display": "standalone",
+    "start_url": "https://kurer.online/",
+    "short_name": "KO",
+    "theme_color": "#4caf50",
+    "description": "Курьерская доставка по всей территории ДНР",
+    "orientation": "any",
+    "background_color": "#FFFFFF",
+    "related_applications": [],
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "./favicons/apple-touch-icon-144x144.png",
+            "type": "image/png",
+            "sizes": "144x144"
+        },
+        {
+            "src": "./favicon.ico",
+            "sizes": "48x48 32x32 16x16"
+        },
+        {
+            "src": "./favicon.ico",
+            "sizes": "16x16 32x32",
+            "type": "image/x-icon"
+        },
+        {
+            "src": "./favicons/favicon-32x32.png",
+            "sizes": "32x32",
+            "type": "image/png"
+        },
+        {
+            "src": "./favicons/favicon-32x32.png",
+            "type": "image/png",
+            "sizes": "32x32"
+        },
+        {
+            "src": "./favicons/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "./favicons/apple-touch-icon-57x57.png",
+            "type": "image/png",
+            "sizes": "57x57"
+        },
+        {
+            "src": "./favicons/apple-touch-icon-72x72.png",
+            "sizes": "72x72",
+            "type": "image/png"
+        },
+        {
+            "src": "./favicons/apple-touch-icon-114x114.png",
+            "sizes": "114x114",
+            "type": "image/png"
+        },
+        {
+            "src": "./favicons/apple-touch-icon-120x120.png",
+            "sizes": "120x120",
+            "type": "image/png"
+        },
+        {
+            "src": "./favicons/apple-touch-icon-144x144.png",
+            "sizes": "144x144",
+            "type": "image/png"
+        },
+        {
+            "src": "./favicons/apple-touch-icon-152x152.png",
+            "sizes": "152x152",
+            "type": "image/png"
+        },
+        {
+            "src": "./favicons/apple-touch-icon-180x180.png",
+            "sizes": "180x180",
+            "type": "image/png"
+        }
+    ]
+}
