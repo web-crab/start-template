@@ -1,5 +1,6 @@
 export default {
     host: '',
     user: '',
-    pass: ''
+    pass: '',
+    path: 'example.com/www/'
 }

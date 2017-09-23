@@ -28,7 +28,7 @@ import svgmin  from 'gulp-svgmin'              //  Минификация SVG
 import sprite  from 'gulp-svgstore'            //  Объединение SVG в спрайт
 
 import ftp     from 'vinyl-ftp'                //  FTP-соединение
-import { host, user, pass }  from './ftp'      //  Доступ к FTP
+import ftpData from './ftp'                    //  Доступ к FTP
 
 
 //  CallBack для синхронизации удаления файлов
@@ -137,9 +137,10 @@ gulp.task('svg', () => {
 })
 
 gulp.task('ftp', () => {
+    const { host, user, pass, path } = ftpData
     const connect = ftp.create({ host, user, pass, log: gutil.log})
-    gulp.src('dist/**', { base: '.', buffer: false })
-        .pipe(connect.newer('/'))
+    gulp.src('dist/**', { buffer: false })
+        .pipe(connect.dest(path))
         .pipe(gutil.noop())
 })
 
