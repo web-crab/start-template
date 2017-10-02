@@ -24,12 +24,12 @@ gulp
 
 ### fonts/
 Шрифты. Каждое начертание в одном расширении.  
-Переименовать файлы в такой формат `FontFamily-Style1-Style2` (напр.  `Roboto-Bold-Italic.woff` или `Roboto-Regular.ttf`).  
+Переименовать файлы в такой формат `FontName-Style1-Style2` (напр.  `Roboto-Bold-Italic.woff` или `Roboto-Regular.ttf`).  
 **Шрифты подключаются автоматически.**
 ``` css
 /* В CSS использовать так */
 p {
-    font-family: Roboto;    /* Имя файла */
+    font-family: Roboto;    /* FontName */
     font-weight: 700;       /* Style1 | Light - 300, Regular - 400, Medium - 500, Bold - 700 */
     font-style: italic;     /* Style2 */
 }
