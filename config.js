@@ -1,17 +1,29 @@
+/**
+ * Настройки сайта
+ */
 export const appConfig = {
-    appName: 'Example',
-    color: '#ffc107',
-    bgColor: '#ffffff',
-    startUrl: 'http://example.com'
+    faviconFormat: 'png',   //  Формат фавиконки
+    appName: 'Example',     //  Имя сайта - отображается при добавлении сайта на экран
+    color: '#ffc107',       //  Основной цвет, в формате HEX в нижем регистре
+    bgColor: '#ffffff',     //  Цвет фона, в формате HEX в нижем регистре
+    startUrl: 'http://example.com'  //  Ссылка на корень сайта
 }
 
+/**
+ * Данные для подключения по FTP
+ */
 export const ftpData = {
     host: '',
     user: '',
     pass: '',
-    path: 'example.com/www/'
+    path: 'example.com/www/'    //  Путь до каталога, куда загружать сайт
 }
 
+/**
+ * HTML-код, вставляется во все страницы сайта
+ * svgSprite - формируется автоматически
+ * head - набор необходимы мета-тегов, подключение фавиконов, регистрация serwice-worker
+ */
 export const html = {
     svgSprite: '',
     head: `
@@ -53,6 +65,9 @@ export const html = {
     `
 } 
 
+/**
+ * Содержимое файла .htaccess, сжатие и кеширование контента
+ */
 export const htaccess = `
     <IfModule mod_expires.c>
     ExpiresActive On

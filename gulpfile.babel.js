@@ -40,7 +40,7 @@ import ftp     from 'vinyl-ftp'                //  FTP-соединение
 import rev     from 'gulp-res-version'         //  Ревизия файлов
 
 //  Импортируем настройки
-import { appConfig, html, htaccess, ftpData, regSW } from './config'
+import { appConfig, ftpData, html, htaccess } from './config'
 
 //  Получаем аргументы из командной строки
 const isBuild = argv.b || false             //  -b (Сборка в продакшен)
@@ -148,7 +148,7 @@ const tasks = [
             .pipe(replace(/<svg /g, '<svg style="display:none" '))
             .pipe(require('through2').obj(file => {
                 html.svgSprite = file.contents.toString()
-                sync('html', bSync.reload)
+                if (!isBuild) sync('html', bSync.reload)
             }))
         }
     },
@@ -216,7 +216,7 @@ const prodTasks = [
         name: 'favicons',
         body() {
             return favicon.generateFavicon({
-                masterPicture: 'app/favicon.png',
+                masterPicture: `app/favicon.${appConfig.faviconFormat}`,
                 dest: 'dist',
                 iconsPath: '',
                 design: {
@@ -286,7 +286,7 @@ function watch() {
     })
 }
 
-//  PROD-режим | Запуск продакшен-скриптов
+//  PROD-режим | Запуск продакшен-скриптов и отправка сайта на сервер
 function build() {
     sync(...prodTasksNames, () => {
         if (sendFTP) {
@@ -299,7 +299,6 @@ function build() {
 }
 
 gulp.task('default', () => {
-    //  Если продакшен - очищаем dist
     if (isBuild) del('dist')
     sync(...tasksNames, isBuild ? build : watch)
 })
