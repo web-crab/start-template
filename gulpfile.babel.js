@@ -127,8 +127,8 @@ const tasks = [
             .pipe(newer('dist/img'))
             .pipe(imgmin([
                 jpgrec({ progressive: true, max: 80, min: 70 }),
-                pngrec({ quality: '80' }),
-                svgmin()
+                pngrec({ quality: [0.3, 0.5] }),
+//                 svgmin()
             ])).pipe(dest('dist/img'))
         }
     },
